@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue.js - To Do List</title>
+    <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+
+    <h1 style="text-align: center; color: salmon;">To do List en Vue.js</h1>
+
+    <div id="app"> 
+        
+        <!--evenement personnalisé : ex ici on reprend tout le code de l'input-->
+        <eventperso @nouvellenote="ajouterNote"></eventperso> 
+        <!--Ici on appel la fonction ajouterNote
+        cela permet entre autre de répéter la balise :
+        <eventperso @nouvellenote="ajouterNote"></eventperso> -->
+         
+        <p v-for="todo in todos" @click="inverser">
+            {{ todo }}
+        </p>
+        
+        <!--
+        <h2>Composant</h2>
+
+        composant : créer une balise sur mesure
+                <composant v-for="todo in todos" v-bind:content="todo"></composant> 
+        v-bind ici permet de remplacer todo par ceux du tableau si on l'enlève il remplace les données du tableau par "todo"
+        on peut aussi l'écrire :content
+        -->
+
+       
+
+        
+
+    </div>
+
+    <script> 
+        let abc = Vue.createApp({
+            data(){ 
+                return { 
+                    todos: ['Sauver le monde', 'Aller manger', 'Faire une révolution', 'Boire un Cappuccino'],
+                }
+            },
+            methods:{ 
+                ajouterNote(message) {
+                    this.todos.push(message);
+                }
+            }
+        }) 
+        
+        abc.component('composant', {
+            props: ['content'],
+            template: `<p> {{ content }} </p>`
+        })
+
+        abc.component('eventperso', {
+            props: [],
+            emits: ['nouvellenote'],
+            data(){
+                return{
+                    interne: 'Nouveau message'        
+                }
+            },
+            methods:{ 
+                enregistrementNote(){
+                    this.$emit('nouvellenote', this.interne)
+                    this.interne = ''; //Vide le champ
+                /*La fonction $emit ici va renvoyer 2 choses : 
+                *   - un évènement personnalisé (click, hover...)
+                *   - 
+                */
+                }
+            },
+            template: ` 
+                <input type="text" v-model="interne" /> 
+                <a href="#" @click="enregistrementNote" v-if=" interne != '' ">Ajouter un todo</a> 
+                {{ interne }} 
+            `   
+        /*
+        *   <input type="text" v-model="message" /> 
+        *   <a href="#" @click="ajouterNote" v-if="message !=''">Ajouter un todo</a> 
+        *   {{ message }} 
+        *Le problème ici étant que pour le v-model on ne peut accéder au message depuis le todos un peut plus haut:
+        *on va donc ajouter des données qui sont internes aux composents (fonction data)
+        */
+
+        })
+
+        abc.mount('#app') 
+
+    </script>
+
+        <!--
+            Conclusion:
+
+            Attention l'interface ne sauvegarde pas les données car on est pour le moment sur du 100% front-end. 
+
+            La gestion des données est reliée dans le back-end.
+
+            Dans la réalité une app = un ensemble de composants imbriqués, donc on retrouvera souvent dans la pratique:
+
+                - des fichiers.vue qui seront des composants => qui intégreront:
+                            - une balise template : <template> </template>
+                            - une balise script : <script> </script>
+                            - une balise style : <style> </style>
+                
+                - Et pour nous aider il existe des outils tels que Vue CLI (Commande Line Interface) qui permet par ex de créer
+                une structure de projet.
+
+                - Pour faciliter le changement de composant et l'afficher au bon moment notamment vis à vis de l'URL : Vue Router.
+                
+                - Vue X : Permet de partager des données entre plusieurs composants
+
+                - Vue JS3 standardise une nouvelle façon de partager les données : Options API et Composition API
+
+        Petit outils: Vue Devtools : on peut l'insttaller dans le navigateur afin de pouvoir inspecter nos composants, de voir
+        l'état coresspondant, etc. Peut aider à déboguer notre appli et à la tester.
+
+        -->
+
+</body>
+</html>
